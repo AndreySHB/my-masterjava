@@ -21,7 +21,7 @@ public class MainMatrix {
         double singleThreadSum = 0.;
         double concurrentThreadSum = 0.;
         int count = 1;
-        while (count < 6) {
+        while (count < 51) {
             System.out.println("Pass " + count);
             long start = System.currentTimeMillis();
             final int[][] matrixC = MatrixUtil.singleThreadMultiply(matrixA, matrixB);
@@ -42,11 +42,11 @@ public class MainMatrix {
             count++;
         }
         executor.shutdown();
-        out("\nAverage single thread time, sec: %.3f", singleThreadSum / 5.);
-        out("Average concurrent thread time, sec: %.3f", concurrentThreadSum / 5.);
+        out("\nAverage single thread time, sec: %.3f", singleThreadSum / 50.);
+        out("Average concurrent thread time, sec: %.3f", concurrentThreadSum / 50.);
     }
 
     private static void out(String format, double ms) {
-        System.out.println(String.format(format, ms));
+        System.out.printf((format) + "%n", ms);
     }
 }

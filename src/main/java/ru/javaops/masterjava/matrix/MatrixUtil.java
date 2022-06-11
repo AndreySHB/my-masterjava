@@ -1,8 +1,11 @@
 package ru.javaops.masterjava.matrix;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 /**
  * gkislin
@@ -10,16 +13,35 @@ import java.util.concurrent.ExecutorService;
  */
 public class MatrixUtil {
 
-    // TODO implement parallel multiplication matrixA*matrixB
+    // TODO implement parallel multiplication matrixA*matrixB done
     public static int[][] concurrentMultiply(int[][] matrixA, int[][] matrixB, ExecutorService executor) throws InterruptedException, ExecutionException {
         final int matrixSize = matrixA.length;
         final int[][] matrixC = new int[matrixSize][matrixSize];
-
+        final int[][] matrixBT = tMatrix(matrixB);
+        List<Future> futures = new ArrayList<>();
+        for (int i = 0; i < matrixSize; i++) {
+            int finalI = i;
+            futures.add(executor.submit(() -> {
+                for (int j = 0; j < matrixSize; j++) {
+                    int sum = 0;
+                    for (int k = 0; k < matrixSize; k++) {
+                        sum += matrixA[finalI][k] * matrixBT[j][k];
+                    }
+                    matrixC[finalI][j] = sum;
+                }
+            }));
+        }
+        while (!futures.isEmpty()) {
+            if (futures.get(0).isDone()){
+                futures.remove(0);
+            }
+        }
         return matrixC;
     }
 
-    // TODO optimize by https://habrahabr.ru/post/114797/
+    // TODO optimize by https://habrahabr.ru/post/114797/ done
     public static int[][] singleThreadMultiply(int[][] matrixA, int[][] matrixB) {
+        final int[][] matrixBT = tMatrix(matrixB);
         final int matrixSize = matrixA.length;
         final int[][] matrixC = new int[matrixSize][matrixSize];
 
@@ -27,12 +49,33 @@ public class MatrixUtil {
             for (int j = 0; j < matrixSize; j++) {
                 int sum = 0;
                 for (int k = 0; k < matrixSize; k++) {
-                    sum += matrixA[i][k] * matrixB[k][j];
+                    sum += matrixA[i][k] * matrixBT[j][k];
                 }
                 matrixC[i][j] = sum;
             }
         }
         return matrixC;
+    }
+
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        /*int[][] ints = create(2);
+        System.out.println(Arrays.deepToString(ints));
+        int[][] ints1 = create(2);
+        System.out.println(Arrays.deepToString(ints1));
+        int[][] ints2 = concurrentMultiply(ints, ints1, Executors.newFixedThreadPool(10));
+        System.out.println(Arrays.deepToString(ints2));*/
+        System.out.println(Runtime.getRuntime().availableProcessors());
+    }
+
+    private static int[][] tMatrix(int[][] matrix) {
+        int size = matrix.length;
+        int[][] tmarrix = new int[size][size];
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                tmarrix[i][j] = matrix[j][i];
+            }
+        }
+        return tmarrix;
     }
 
     public static int[][] create(int size) {
