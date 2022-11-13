@@ -144,6 +144,9 @@
     <dependencyManagement>
     </dependencyManagement>
     <modules>
+        <module>parent</module>
+        <module>parent-web</module>
+
         <module>common</module>
         <module>web</module>
         <module>services</module>
