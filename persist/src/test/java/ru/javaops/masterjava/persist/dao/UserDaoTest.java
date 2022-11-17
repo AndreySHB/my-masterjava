@@ -31,5 +31,6 @@ public class UserDaoTest extends AbstractDaoTest<UserDao> {
     public void getWithLimit() {
         List<User> users = dao.getWithLimit(5);
         Assert.assertEquals(FIST5_USERS, users);
+        dao.clean();
     }
 }
